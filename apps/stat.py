@@ -1,17 +1,19 @@
 import streamlit as st 
 import pandas as pd
-from hydralit import HydraHeadApp
-
-
-
+import numpy as np
+from pandas_profiling import ProfileReport
+from streamlit_pandas_profiling import st_profile_report
+from PIL import Image
 
 def app():
     header = st.container()
     dataset = st.container()
-
-    st.title('Synthetic FDP re-employement data')
+    
     with header:
-        
+        image = Image.open('ref.jpg')
+        st.image(image, caption='Refugees used in the UK to fill up the skill shortage of the healthcare sectors (Refugee Council)')
+
+        st.title('Synthetic FDP re-employement data')
         st.text('The project looks at the skills and possible values of those skills that are present in the FDP communities')
 
     with dataset:
@@ -28,6 +30,8 @@ def app():
         with st.expander("Data synthesized from"):
             st.write("Talents Beyond Bounderies [link](https://www.talentbeyondboundaries.org/the-talent-catalog) and from UNHCR [link](https://data2.unhcr.org/en/dataviz/105?sv=0&geo=0)")
         
+        chart_df = pd.DataFrame(data['discretionary_income'].value_counts())
+        st.area_chart(chart_df)
     
         st.subheader('Education qualifications within the synthetic sample of FDP population')
     
