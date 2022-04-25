@@ -112,20 +112,41 @@ def app():
     #To select only the first row/input data
     #df = df_t[:1]
     df = df[:1]
-
+    #Reversing the onehotencoded to categorical data
+    #Creating custome function
+    def reversedummy(df, prefix_sep="_"):
+        cols2collapse = {
+            item.split(prefix_sep)[0]: (prefix_sep in item) for item in df.columns
+        }
+        series_list = []
+        for col, needs_to_collapse in cols2collapse.items():
+            if needs_to_collapse:
+                reversedummied = (
+                    df.filter(like=col)
+                    .idxmax(axis=1)
+                    .apply(lambda x: x.split(prefix_sep, maxsplit=1)[1])
+                    .rename(col)
+                )
+                series_list.append(reversedummied)
+            else:
+                series_list.append(df[col])
+        reversedummy_df = pd.concat(series_list, axis=1)
+        return reversedummy_df
+    df2 = reversedummy(df)
+    
     #Displaying input features
     st.subheader('Selected Input Feature')
 
     if file_upload is not None:
         #This gives the actual encoded version of the data
-        #st.write(df)
+        st.write(df2)
         #This returns the non encoded version of the data
-        st.write(df_input)
+        #st.write(df_input)
     
     else:
         st.write('Upload CSV file? Example input parameters are currently in use')
-        st.write(refugee_raw.head(1)) #this gives the non encoded version
-        #st.write(df)#this gives the onehot encoded version
+        #st.write(refugee_raw.head(1)) #this gives the non encoded version
+        st.write(df2)#this gives the onehot encoded version
 
 
     #Using cahce
